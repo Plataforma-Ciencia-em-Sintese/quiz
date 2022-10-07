@@ -149,14 +149,15 @@ size_flags_vertical = 4
 custom_styles/panel = SubResource( 43 )
 
 [node name="Image" type="TextureRect" parent="MarginContainer/AspectRatioContainer/MarginContainer/GlobalVBoxContainer/Logo/PanelContainer2"]
-margin_left = 330.0
+margin_left = 384.0
 margin_top = 7.0
-margin_right = 729.0
+margin_right = 676.0
 margin_bottom = 299.0
 rect_min_size = Vector2( 292, 292 )
 size_flags_horizontal = 4
 size_flags_vertical = 4
 texture = ExtResource( 4 )
+expand = true
 stretch_mode = 6
 
 [node name="GameName" type="Label" parent="MarginContainer/AspectRatioContainer/MarginContainer/GlobalVBoxContainer/Logo"]
@@ -166,7 +167,7 @@ margin_bottom = 450.0
 rect_min_size = Vector2( 676, 0 )
 size_flags_horizontal = 3
 custom_fonts/font = SubResource( 44 )
-text = "JOGO DA MEMÓRIA"
+text = "QUIZ"
 align = 1
 valign = 1
 
