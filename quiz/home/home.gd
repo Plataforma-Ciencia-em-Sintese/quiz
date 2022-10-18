@@ -90,7 +90,7 @@ func _on_Easy_pressed() -> void:
 func _on_Medium_pressed() -> void:
 	pass
 #	ChangeLevel.request_mode = ChangeLevel.GameMode.MEDIUM
-#	get_tree().change_scene("res://game/game.tscn")
+	get_tree().change_scene("res://game/game.tscn")
 
 
 func _on_Hard_pressed() -> void:

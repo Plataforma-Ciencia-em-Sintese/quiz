@@ -8,6 +8,7 @@ extends RequestGame
 
 #  [SIGNALS]
 signal request_main_completed
+signal request_questions_completed
 
 
 #  [ENUMS]
@@ -43,8 +44,9 @@ var _resources: Dictionary = Dictionary() \
 func _ready() -> void:
 	print("RequestGameOmeka call _ready()")
 	_request_main()
+	_request_questions()
 	
-	yield(self, "request_main_completed")
+	yield(self, "request_questions_completed")
 	# called upon completion of all requests
 	emit_signal("all_request_game_completed")
 
@@ -76,7 +78,23 @@ func _request_main() -> void:
 		request(http_request, URL_BASE + str(url_parameters["id"]))
 	else:
 		emit_signal("request_error", "RequestGameOmeka._request_main(): property not found")
- 
+
+
+func _request_questions() -> void:
+	yield(self, "request_main_completed")
+#	for question in get_resources()["bibo:content"]:
+#		print(question["display_title"])
+	
+	prints("\n\nPERGUNTAS: ",get_resources()["bibo:content"].size())
+	for question in get_resources()["bibo:content"]:
+		var http_request: HTTPRequest = HTTPRequest.new()
+		add_child(http_request)
+		http_request.connect("request_completed", self, "_on_request_questions")
+		request(http_request, question["@id"])
+	
+	
+	emit_signal("request_questions_completed")
+
 
 #  [SIGNAL_METHODS]
 func _on_request_main(_result: int, response_code: int, _headers: PoolStringArray, body: PoolByteArray) -> void:
@@ -101,3 +119,22 @@ func _on_request_main(_result: int, response_code: int, _headers: PoolStringArra
 		
 	else:
 		emit_signal("request_error", str("RequestGameOmeka._on_request_main(): response code return error: ", response_code))
+
+
+func _on_request_questions(_result: int, response_code: int, _headers: PoolStringArray, body: PoolByteArray) -> void:
+	if response_code == 200:
+		var json := JSON.parse(body.get_string_from_utf8())
+		#print(str(JSON.print(json.result, "\t")))
+		
+		print("--------------------------------------------")
+		
+		if json.result.has("dcterms:title"):
+			prints("PERGUNTA: ", json.result["dcterms:title"][0]["@value"])
+		
+		if json.result.has("dcterms:description"):
+			prints("CORRETA: ", json.result["dcterms:description"][0]["@value"])
+		
+		if json.result.has("bibo:content"):
+			for alternative in json.result["bibo:content"]:
+				if alternative.has("@value"):
+					prints("INCORRETA: ", alternative["@value"])
