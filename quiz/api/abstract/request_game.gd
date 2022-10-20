@@ -23,6 +23,24 @@ signal all_request_game_completed
 
 
 #  [PRIVATE_VARIABLES]
+# _questions, expected value: [{"image": value, "subtitle": value}, ...]
+
+""" _questions, expected
+[
+	{
+		"question": "value",
+		"alternatives": [
+			{"correct": "value", "image_url": "value"}, 
+			{"incorrect": "value", "image_url": "value"},
+			{"incorrect": "value", "image_url": "value"},
+			{"incorrect": "value", "image_url": "value"},
+		]
+	},
+]
+"""
+
+var _questions: Array = Array([]) \
+		setget set_questions, get_questions
 
 
 #  [ONREADY_VARIABLES]
@@ -44,6 +62,12 @@ signal all_request_game_completed
 
 
 #  [PUBLIC_METHODS]
+func set_questions(new_value: Array) -> void:
+	_questions = new_value
+
+
+func get_questions() -> Array:
+	return _questions
 
 
 #  [PRIVATE_METHODS]

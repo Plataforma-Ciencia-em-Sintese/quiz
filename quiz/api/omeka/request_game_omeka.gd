@@ -85,15 +85,14 @@ func _request_questions() -> void:
 #	for question in get_resources()["bibo:content"]:
 #		print(question["display_title"])
 	
-	prints("\n\nPERGUNTAS: ",get_resources()["bibo:content"].size())
+	var question_counter: int = int(get_resources()["bibo:content"].size())
+	prints("\n\nPERGUNTAS: ", question_counter)
+	
 	for question in get_resources()["bibo:content"]:
 		var http_request: HTTPRequest = HTTPRequest.new()
 		add_child(http_request)
-		http_request.connect("request_completed", self, "_on_request_questions")
+		http_request.connect("request_completed", self, "_on_request_questions", [question_counter])
 		request(http_request, question["@id"])
-	
-	
-	emit_signal("request_questions_completed")
 
 
 #  [SIGNAL_METHODS]
@@ -121,20 +120,51 @@ func _on_request_main(_result: int, response_code: int, _headers: PoolStringArra
 		emit_signal("request_error", str("RequestGameOmeka._on_request_main(): response code return error: ", response_code))
 
 
-func _on_request_questions(_result: int, response_code: int, _headers: PoolStringArray, body: PoolByteArray) -> void:
+func _on_request_questions(_result: int, response_code: int, _headers: PoolStringArray, body: PoolByteArray, question_counter: int) -> void:
 	if response_code == 200:
 		var json := JSON.parse(body.get_string_from_utf8())
 		#print(str(JSON.print(json.result, "\t")))
 		
 		print("--------------------------------------------")
 		
+		var new_question: Dictionary = Dictionary({})
+		
 		if json.result.has("dcterms:title"):
-			prints("PERGUNTA: ", json.result["dcterms:title"][0]["@value"])
+			new_question = {
+				"question": str(json.result["dcterms:title"][0]["@value"]),
+				"alternatives": []
+			}
+			prints("PERGUNTA: ", new_question["question"])
 		
 		if json.result.has("dcterms:description"):
-			prints("CORRETA: ", json.result["dcterms:description"][0]["@value"])
+			new_question["alternatives"].append((
+				{
+					"correct": str(json.result["dcterms:description"][0]["@value"]), 
+					"image_url": ""
+				}
+			)) 
+			prints("CORRETA: ", new_question["alternatives"][0]["correct"])
+			
 		
 		if json.result.has("bibo:content"):
+			var counter: int = 0
 			for alternative in json.result["bibo:content"]:
 				if alternative.has("@value"):
-					prints("INCORRETA: ", alternative["@value"])
+					counter += 1
+					new_question["alternatives"].append((
+						{
+							"incorrect": str(alternative["@value"]), 
+							"image_url": ""
+						}
+					))
+					prints("INCORRETA: ", new_question["alternatives"][counter]["incorrect"])
+					
+					
+					
+		# write on _questions
+		#print(str(JSON.print(new_question, "\t")))
+		get_questions().append(new_question)
+		
+		question_counter -= 1
+		if get_questions().size() == question_counter:
+			emit_signal("request_questions_completed")
