@@ -91,6 +91,9 @@ func _load_current_question() -> void:
 	
 	randomize()
 	random_alternatives.shuffle()
+	var temp = random_alternatives[0]
+	random_alternatives[0] = random_alternatives[random_alternatives.size()-1]
+	random_alternatives[random_alternatives.size()-1] = temp
 	
 	# configure visibility state
 	alternative_1.get_node("Button").disabled = true
