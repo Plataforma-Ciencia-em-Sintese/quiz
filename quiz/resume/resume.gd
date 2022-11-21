@@ -25,8 +25,9 @@ extends Control
 
 
 #  [ONREADY_VARIABLES]
-onready var article_summary: Label = $"MarginContainer/Panel/VBoxContainer/HBoxContainer2/Panel/MarginContainer/VBoxContainer/Text"
-
+onready var article_summary: Label = $MarginContainer/Panel/VBoxContainer/HBoxContainer2/Panel/MarginContainer/VBoxContainer/Text
+onready var redirect: Button = $MarginContainer/Panel/VBoxContainer/HBoxContainer2/Panel/MarginContainer/VBoxContainer/Redirect
+onready var pet: TextureRect = $MarginContainer/Panel/VBoxContainer/HBoxContainer2/AspectRatioContainer/TextureRect
 
 #  [OPTIONAL_BUILT-IN_VIRTUAL_METHOD]
 #func _init() -> void:
@@ -37,7 +38,13 @@ onready var article_summary: Label = $"MarginContainer/Panel/VBoxContainer/HBoxC
 func _ready() -> void:
 	_load_theme()
 	
+	pet.texture = API.common.get_pet()
+	
 	article_summary.text = API.common.get_article_summary() #+ "\n\n Bom Divertimento!"
+	
+	if API.common.get_article_link() == "":
+		redirect.disabled = true
+		redirect.set("modulate", Color(1.0, 1.0, 1.0, 0.0))
 
 
 #  [REMAINIG_BUILT-IN_VIRTUAL_METHODS]
@@ -55,7 +62,7 @@ func _load_theme() -> void:
 
 #  [SIGNAL_METHODS]
 func _on_Redirect_pressed() -> void:
-	var url: String = "https://www.canalciencia.ibict.br/ciencia-em-sintese1/ciencias-biologicas/196-por-que-existe-tanta-diversidade-de-aves-nas-florestas-tropicais"
+	var url: String = API.common.get_article_link()
 	OS.shell_open(url)
 
 
