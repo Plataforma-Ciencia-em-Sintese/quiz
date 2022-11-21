@@ -43,9 +43,9 @@ func _ready() -> void:
 	print("RequestThemeOmeka call _ready()")
 	_request_main()
 	_request_colors()
-	_request_background_texture()
+	#_request_background_texture()
 	
-	yield(self, "request_background_texture_completed")
+	yield(self, "request_colors_completed")
 	# called upon completion of all requests
 	emit_signal("all_request_theme_completed")
 

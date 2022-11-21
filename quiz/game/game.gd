@@ -30,12 +30,13 @@ var _current_question: int = 0 \
 
 
 #  [ONREADY_VARIABLES]
+onready var question_container: VBoxContainer = $MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/pergunta/QuestionContainer
 onready var conter_questions: Label = $MarginContainer/VBoxContainer/BarContainer/Container/Counter
 onready var question: Label = $MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/pergunta/QuestionContainer/Question
-onready var alternative_1: HBoxContainer = $MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/pergunta/QuestionContainer/Alternative1
-onready var alternative_2: HBoxContainer = $MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/pergunta/QuestionContainer/Alternative2
-onready var alternative_3: HBoxContainer = $MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/pergunta/QuestionContainer/Alternative3
-onready var alternative_4: HBoxContainer = $MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/pergunta/QuestionContainer/Alternative4
+onready var alternative_1: Control = $MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/pergunta/QuestionContainer/Alternative1
+onready var alternative_2: Control = $MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/pergunta/QuestionContainer/Alternative2
+onready var alternative_3: Control = $MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/pergunta/QuestionContainer/Alternative3
+onready var alternative_4: Control = $MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/pergunta/QuestionContainer/Alternative4
 
 
 #  [OPTIONAL_BUILT-IN_VIRTUAL_METHOD]
@@ -47,6 +48,11 @@ onready var alternative_4: HBoxContainer = $MarginContainer/VBoxContainer/GameCo
 func _ready() -> void:
 	_load_current_question()
 	set_total_questions(int( API.game.get_questions().size())) 
+	
+	alternative_1.connect("pressed", self, "_on_Alternative1_Button_pressed")
+	alternative_2.connect("pressed", self, "_on_Alternative2_Button_pressed")
+	alternative_3.connect("pressed", self, "_on_Alternative3_Button_pressed")
+	alternative_4.connect("pressed", self, "_on_Alternative4_Button_pressed")
 
 
 #  [REMAINIG_BUILT-IN_VIRTUAL_METHODS]
@@ -96,40 +102,39 @@ func _load_current_question() -> void:
 	random_alternatives[random_alternatives.size()-1] = temp
 	
 	# configure visibility state
-	alternative_1.get_node("Button").disabled = true
-	alternative_2.get_node("Button").disabled = true
-	alternative_3.get_node("Button").disabled = true
-	alternative_4.get_node("Button").disabled = true
-	alternative_1.get_node("TextureRect").set("modulate", Color(0.0, 0.0, 0.0, 0.0))
-	alternative_2.get_node("TextureRect").set("modulate", Color(0.0, 0.0, 0.0, 0.0))
-	alternative_3.get_node("TextureRect").set("modulate", Color(0.0, 0.0, 0.0, 0.0))
-	alternative_4.get_node("TextureRect").set("modulate", Color(0.0, 0.0, 0.0, 0.0))
-	alternative_1.set("modulate", Color(1.0, 1.0, 1.0, 1.0))
-	alternative_2.set("modulate", Color(1.0, 1.0, 1.0, 1.0))
-	alternative_3.set("modulate", Color(1.0, 1.0, 1.0, 1.0))
-	alternative_4.set("modulate", Color(1.0, 1.0, 1.0, 1.0))
+	var counter: int = 0
+	for alternative in question_container.get_children():
+		if alternative is Alternative:
+			counter += 1
+			alternative.number.text = str(counter)
+			alternative.disabled(true)
+			alternative.checker_visible(false)
+			alternative.set("modulate", Color(1.0, 1.0, 1.0, 1.0))
 	
+	
+	
+	# set text
 	if dictionary_questions["alternatives"].size() >= 1:
-		alternative_1.get_node("Button").text = " " + random_alternatives[0]
-		alternative_1.get_node("Button").disabled = false
+		alternative_1.message.text = " " + random_alternatives[0]
+		alternative_1.disabled(false)
 	else:
 		alternative_1.set("modulate", Color(0.0, 0.0, 0.0, 0.0))
 		
 	if dictionary_questions["alternatives"].size() >= 2:
-		alternative_2.get_node("Button").text = " " + random_alternatives[1]
-		alternative_2.get_node("Button").disabled = false
+		alternative_2.message.text = " " + random_alternatives[1]
+		alternative_2.disabled(false)
 	else:
 		alternative_2.set("modulate", Color(0.0, 0.0, 0.0, 0.0))
 		
 	if dictionary_questions["alternatives"].size() >= 3:
-		alternative_3.get_node("Button").text = " " + random_alternatives[2]
-		alternative_3.get_node("Button").disabled = false
+		alternative_3.message.text = " " + random_alternatives[2]
+		alternative_3.disabled(false)
 	else:
 		alternative_3.set("modulate", Color(0.0, 0.0, 0.0, 0.0))
 		
 	if dictionary_questions["alternatives"].size() >= 4:
-		alternative_4.get_node("Button").text = " " + random_alternatives[3]
-		alternative_4.get_node("Button").disabled = false
+		alternative_4.message.text = " " + random_alternatives[3]
+		alternative_4.disabled(false)
 	else:
 		alternative_4.set("modulate", Color(0.0, 0.0, 0.0, 0.0))
 
@@ -138,25 +143,14 @@ func _reveal_alternatives() -> void:
 	var dictionary_questions: Dictionary = API.game.get_questions()[get_current_question()]
 	var correct_alternative: String = " " + dictionary_questions["alternatives"][0]["correct"]
 	
-	if alternative_1.get_node("Button").text == correct_alternative:
-		alternative_1.get_node("TextureRect").set("modulate", Color(0.4, 1.0, 0.33, 1.0))
-	else:
-		alternative_1.get_node("TextureRect").set("modulate", Color(1.0, 0.11, 0.11, 1.0))
-	
-	if alternative_2.get_node("Button").text == correct_alternative:
-		alternative_2.get_node("TextureRect").set("modulate", Color(0.4, 1.0, 0.33, 1.0))
-	else:
-		alternative_2.get_node("TextureRect").set("modulate", Color(1.0, 0.11, 0.11, 1.0))
-	
-	if alternative_3.get_node("Button").text == correct_alternative:
-		alternative_3.get_node("TextureRect").set("modulate", Color(0.4, 1.0, 0.33, 1.0))
-	else:
-		alternative_3.get_node("TextureRect").set("modulate", Color(1.0, 0.11, 0.11, 1.0))
-	
-	if alternative_4.get_node("Button").text == correct_alternative:
-		alternative_4.get_node("TextureRect").set("modulate", Color(0.4, 1.0, 0.33, 1.0))
-	else:
-		alternative_4.get_node("TextureRect").set("modulate", Color(1.0, 0.11, 0.11, 1.0))
+	for alternative in question_container.get_children():
+		if alternative is Alternative:
+			if alternative.message.text == correct_alternative:
+				alternative.checker_visible(true)
+				alternative.set_checker_state(true)
+			else:
+				alternative.checker_visible(true)
+				alternative.set_checker_state(false)
  
 
 #  [SIGNAL_METHODS]
@@ -165,10 +159,10 @@ func _on_Home_pressed() -> void:
 
 
 func _on_Alternative1_Button_pressed() -> void:
-	alternative_1.get_node("Button").disabled = true
-	alternative_2.get_node("Button").disabled = true
-	alternative_3.get_node("Button").disabled = true
-	alternative_4.get_node("Button").disabled = true
+	alternative_1.disabled(true, true)
+	alternative_2.disabled(true)
+	alternative_3.disabled(true)
+	alternative_4.disabled(true)
 	
 	print("alternative 1")
 	
@@ -182,12 +176,12 @@ func _on_Alternative1_Button_pressed() -> void:
 
 
 func _on_Alternative2_Button_pressed() -> void:
-	alternative_1.get_node("Button").disabled = true
-	alternative_2.get_node("Button").disabled = true
-	alternative_3.get_node("Button").disabled = true
-	alternative_4.get_node("Button").disabled = true
+	alternative_1.disabled(true)
+	alternative_2.disabled(true, true)
+	alternative_3.disabled(true)
+	alternative_4.disabled(true)
 	
-	print("alternative 1")
+	print("alternative 2")
 	
 	_reveal_alternatives()
 	
@@ -198,12 +192,12 @@ func _on_Alternative2_Button_pressed() -> void:
 
 
 func _on_Alternative3_Button_pressed() -> void:
-	alternative_1.get_node("Button").disabled = true
-	alternative_2.get_node("Button").disabled = true
-	alternative_3.get_node("Button").disabled = true
-	alternative_4.get_node("Button").disabled = true
+	alternative_1.disabled(true)
+	alternative_2.disabled(true)
+	alternative_3.disabled(true, true)
+	alternative_4.disabled(true)
 	
-	print("alternative 1")
+	print("alternative 3")
 	
 	_reveal_alternatives()
 	
@@ -214,12 +208,12 @@ func _on_Alternative3_Button_pressed() -> void:
 
 
 func _on_Alternative4_Button_pressed() -> void:
-	alternative_1.get_node("Button").disabled = true
-	alternative_2.get_node("Button").disabled = true
-	alternative_3.get_node("Button").disabled = true
-	alternative_4.get_node("Button").disabled = true
+	alternative_1.disabled(true)
+	alternative_2.disabled(true)
+	alternative_3.disabled(true)
+	alternative_4.disabled(true, true)
 	
-	print("alternative 1")
+	print("alternative 4")
 	
 	_reveal_alternatives()
 	
