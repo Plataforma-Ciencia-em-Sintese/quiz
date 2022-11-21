@@ -43,9 +43,9 @@ func _ready() -> void:
 	print("RequestThemeOmeka call _ready()")
 	_request_main()
 	_request_colors()
-	#_request_background_texture()
+	_request_background_texture()
 	
-	yield(self, "request_colors_completed")
+	yield(self, "request_background_texture_completed")
 	# called upon completion of all requests
 	emit_signal("all_request_theme_completed")
 
@@ -69,7 +69,7 @@ func get_resources() -> Dictionary:
 
 #  [PRIVATE_METHODS]
 func _request_main() -> void:
-	var url_parameters := URL.get_parameters("https://.../?id=24810&skip=0")
+	var url_parameters := URL.get_parameters("https://.../?id=23391&skip=0")
 	if url_parameters.has("id"):
 		var http_request: HTTPRequest = HTTPRequest.new()
 		add_child(http_request)
@@ -115,7 +115,7 @@ func _on_request_main(_result: int, response_code: int, _headers: PoolStringArra
 			TYPE_DICTIONARY:
 				
 				if json.result.has("o:resource_template"):
-					if int(json.result["o:resource_template"]["o:id"]) == RESOURCE_MODEL_ID:
+					if int(json.result["o:resource_template"]["o:id"])  in [RESOURCE_MODEL_ID, 19]:
 						set_resources(json.result)
 						emit_signal("request_main_completed")
 					else:
