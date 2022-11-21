@@ -721,6 +721,7 @@ custom_constants/separation = 30
 [node name="Home" parent="MarginContainer/VBoxContainer/BarContainer" instance=ExtResource( 6 )]
 margin_top = 1.0
 margin_bottom = 121.0
+hint_tooltip = "Menu Principal"
 size_flags_horizontal = 0
 custom_fonts/font = SubResource( 82 )
 custom_styles/hover = SubResource( 83 )
@@ -739,6 +740,7 @@ margin_bottom = 122.0
 [node name="Tip" parent="MarginContainer/VBoxContainer/BarContainer/HBoxContainer" instance=ExtResource( 6 )]
 margin_top = 1.0
 margin_bottom = 121.0
+hint_tooltip = "Dicas Restantes"
 size_flags_horizontal = 2
 custom_fonts/font = SubResource( 89 )
 custom_styles/hover = SubResource( 90 )
@@ -826,6 +828,7 @@ margin_left = 1342.0
 margin_top = 1.0
 margin_right = 1462.0
 margin_bottom = 121.0
+hint_tooltip = "Como Jogar"
 size_flags_horizontal = 10
 custom_fonts/font = SubResource( 96 )
 custom_styles/hover = SubResource( 97 )
