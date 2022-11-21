@@ -217,7 +217,7 @@ func _on_request_main(_result: int, response_code: int, _headers: PoolStringArra
 			TYPE_DICTIONARY:
 				
 				if json.result.has("o:resource_template"):
-					if int(json.result["o:resource_template"]["o:id"]) in [RESOURCE_MODEL_ID, 19]:
+					if int(json.result["o:resource_template"]["o:id"]) == RESOURCE_MODEL_ID:
 						set_resources(json.result)
 						emit_signal("request_main_completed")
 					else:
