@@ -102,7 +102,6 @@ func checker_visible(value: bool) -> void:
 			pass
 
 
-
 #  [PRIVATE_METHODS]
 func _load_theme() -> void:
 	var number_style: StyleBoxFlat = number.get("custom_styles/normal")
@@ -110,6 +109,7 @@ func _load_theme() -> void:
 	
 	var panel_style: StyleBoxFlat = panel.get("custom_styles/panel")
 	panel_style.set("bg_color", API.theme.get_color(API.theme.PB))
+
 
 #  [SIGNAL_METHODS]
 func _on_TextureButton_pressed() -> void:
