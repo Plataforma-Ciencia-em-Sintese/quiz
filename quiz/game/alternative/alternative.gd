@@ -7,7 +7,7 @@ extends Control
 
 
 #  [SIGNALS]
-signal pressed
+signal pressed(message)
 
 
 #  [ENUMS]
@@ -86,6 +86,10 @@ func disabled(value: bool, visibility: bool = false) -> void:
 			pass
 
 
+func is_disabled() -> bool:
+	return panel.get_node("TextureButton").disabled
+
+
 func checker_visible(value: bool) -> void:
 	match(value):
 		true:
@@ -109,4 +113,4 @@ func _load_theme() -> void:
 
 #  [SIGNAL_METHODS]
 func _on_TextureButton_pressed() -> void:
-	emit_signal("pressed")
+	emit_signal("pressed", str(message.text))

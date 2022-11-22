@@ -10,6 +10,7 @@ extends Control
 
 
 #  [ENUMS]
+enum State {FREE=0, WAITING=1}
 
 
 #  [CONSTANTS]
@@ -22,11 +23,20 @@ extends Control
 
 
 #  [PRIVATE_VARIABLES]
+var _state: int = State.FREE \
+		setget set_state, get_state
+
+var _waiting_seconds: float = 2 \
+		setget set_waiting_seconds, get_waiting_seconds
+
 var _total_questions: int = 0 \
 		setget set_total_questions, get_total_questions
 		
 var _current_question: int = 0 \
 		setget set_current_question, get_current_question
+
+var _tip_counter: int = 3 \
+		setget set_tip_counter, get_tip_counter
 
 
 #  [ONREADY_VARIABLES]
@@ -37,6 +47,8 @@ onready var alternative_1: Control = $MarginContainer/VBoxContainer/GameContaine
 onready var alternative_2: Control = $MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/pergunta/QuestionContainer/Alternative2
 onready var alternative_3: Control = $MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/pergunta/QuestionContainer/Alternative3
 onready var alternative_4: Control = $MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/pergunta/QuestionContainer/Alternative4
+onready var tip: Button = $MarginContainer/VBoxContainer/BarContainer/HBoxContainer/Tip
+onready var tip_counter: Label = $MarginContainer/VBoxContainer/BarContainer/HBoxContainer/Tip/Counter
 
 
 #  [OPTIONAL_BUILT-IN_VIRTUAL_METHOD]
@@ -53,7 +65,8 @@ func _ready() -> void:
 	alternative_2.connect("pressed", self, "_on_Alternative2_Button_pressed")
 	alternative_3.connect("pressed", self, "_on_Alternative3_Button_pressed")
 	alternative_4.connect("pressed", self, "_on_Alternative4_Button_pressed")
-
+	
+	tip_counter.text = str(get_tip_counter())
 
 #  [REMAINIG_BUILT-IN_VIRTUAL_METHODS]
 #func _process(_delta: float) -> void:
@@ -61,6 +74,15 @@ func _ready() -> void:
 
 
 #  [PUBLIC_METHODS]
+func set_state(new_value: int) -> void:
+	if new_value in [State.FREE, State.WAITING]:
+		_state = new_value
+
+
+func get_state() -> int:
+	return _state
+
+
 func set_total_questions(new_value: int) -> void:
 	_total_questions = new_value
 	conter_questions.text = "Pergunta: %s/%s" % [str(get_current_question() + 1), str(new_value)]
@@ -77,6 +99,23 @@ func set_current_question(new_value: int) -> void:
 
 func get_current_question() -> int:
 	return _current_question
+
+
+func set_tip_counter(new_value: int) -> void:
+	_tip_counter = new_value
+	tip_counter.text = str(new_value)
+
+
+func get_tip_counter() -> int:
+	return _tip_counter
+
+
+func set_waiting_seconds(new_value: float) -> void:
+	_waiting_seconds = new_value
+
+
+func get_waiting_seconds() -> float:
+	return _waiting_seconds
 
 
 #  [PRIVATE_METHODS]
@@ -115,25 +154,25 @@ func _load_current_question() -> void:
 	
 	# set text
 	if dictionary_questions["alternatives"].size() >= 1:
-		alternative_1.message.text = " " + random_alternatives[0]
+		alternative_1.message.text = random_alternatives[0]
 		alternative_1.disabled(false)
 	else:
 		alternative_1.set("modulate", Color(0.0, 0.0, 0.0, 0.0))
 		
 	if dictionary_questions["alternatives"].size() >= 2:
-		alternative_2.message.text = " " + random_alternatives[1]
+		alternative_2.message.text = random_alternatives[1]
 		alternative_2.disabled(false)
 	else:
 		alternative_2.set("modulate", Color(0.0, 0.0, 0.0, 0.0))
 		
 	if dictionary_questions["alternatives"].size() >= 3:
-		alternative_3.message.text = " " + random_alternatives[2]
+		alternative_3.message.text = random_alternatives[2]
 		alternative_3.disabled(false)
 	else:
 		alternative_3.set("modulate", Color(0.0, 0.0, 0.0, 0.0))
 		
 	if dictionary_questions["alternatives"].size() >= 4:
-		alternative_4.message.text = " " + random_alternatives[3]
+		alternative_4.message.text = random_alternatives[3]
 		alternative_4.disabled(false)
 	else:
 		alternative_4.set("modulate", Color(0.0, 0.0, 0.0, 0.0))
@@ -141,7 +180,7 @@ func _load_current_question() -> void:
 
 func _reveal_alternatives() -> void:
 	var dictionary_questions: Dictionary = API.game.get_questions()[get_current_question()]
-	var correct_alternative: String = " " + dictionary_questions["alternatives"][0]["correct"]
+	var correct_alternative: String = dictionary_questions["alternatives"][0]["correct"]
 	
 	for alternative in question_container.get_children():
 		if alternative is Alternative:
@@ -151,6 +190,11 @@ func _reveal_alternatives() -> void:
 			else:
 				alternative.checker_visible(true)
 				alternative.set_checker_state(false)
+
+
+func _incorrect_alternatives_counter() -> int:
+	var dictionary_questions: Dictionary = API.game.get_questions()[get_current_question()]
+	return (dictionary_questions["alternatives"].size() -1)
  
 
 #  [SIGNAL_METHODS]
@@ -158,66 +202,99 @@ func _on_Home_pressed() -> void:
 	get_tree().change_scene("res://home/home.tscn")
 
 
-func _on_Alternative1_Button_pressed() -> void:
+func _on_Alternative1_Button_pressed(message: String) -> void:
 	alternative_1.disabled(true, true)
 	alternative_2.disabled(true)
 	alternative_3.disabled(true)
 	alternative_4.disabled(true)
 	
-	print("alternative 1")
-	
 	_reveal_alternatives()
 	
-	yield(get_tree().create_timer(2), "timeout")
+	set_state(State.WAITING)
+	yield(get_tree().create_timer(get_waiting_seconds()), "timeout")
+	set_state(State.FREE)
 	if (get_current_question() + 1) < get_total_questions(): 
 		set_current_question(get_current_question() + 1)
 		_load_current_question()
 	
 
 
-func _on_Alternative2_Button_pressed() -> void:
+func _on_Alternative2_Button_pressed(message: String) -> void:
 	alternative_1.disabled(true)
 	alternative_2.disabled(true, true)
 	alternative_3.disabled(true)
 	alternative_4.disabled(true)
 	
-	print("alternative 2")
-	
 	_reveal_alternatives()
 	
-	yield(get_tree().create_timer(2), "timeout")
+	set_state(State.WAITING)
+	yield(get_tree().create_timer(get_waiting_seconds()), "timeout")
+	set_state(State.FREE)
 	if (get_current_question() + 1) < get_total_questions(): 
 		set_current_question(get_current_question() + 1)
 		_load_current_question()
 
 
-func _on_Alternative3_Button_pressed() -> void:
+func _on_Alternative3_Button_pressed(message: String) -> void:
 	alternative_1.disabled(true)
 	alternative_2.disabled(true)
 	alternative_3.disabled(true, true)
 	alternative_4.disabled(true)
 	
-	print("alternative 3")
-	
 	_reveal_alternatives()
 	
-	yield(get_tree().create_timer(2), "timeout")
+	set_state(State.WAITING)
+	yield(get_tree().create_timer(get_waiting_seconds()), "timeout")
+	set_state(State.FREE)
 	if (get_current_question() + 1) < get_total_questions(): 
 		set_current_question(get_current_question() + 1)
 		_load_current_question()
 
 
-func _on_Alternative4_Button_pressed() -> void:
+func _on_Alternative4_Button_pressed(message: String) -> void:
 	alternative_1.disabled(true)
 	alternative_2.disabled(true)
 	alternative_3.disabled(true)
 	alternative_4.disabled(true, true)
 	
-	print("alternative 4")
-	
 	_reveal_alternatives()
 	
-	yield(get_tree().create_timer(2), "timeout")
+	set_state(State.WAITING)
+	yield(get_tree().create_timer(get_waiting_seconds()), "timeout")
+	set_state(State.FREE)
 	if (get_current_question() + 1) < get_total_questions(): 
 		set_current_question(get_current_question() + 1)
 		_load_current_question()
+
+
+func _on_Tip_pressed() -> void:
+	if get_state() == State.FREE:
+	
+		if get_tip_counter() > 0:
+			set_tip_counter(get_tip_counter() -1)
+		
+		if get_tip_counter() == 0:
+			tip_counter.visible = false
+			tip.disabled = true
+		
+		print(get_current_question() +1)
+		print(_incorrect_alternatives_counter())
+		
+		var dictionary_questions: Dictionary = API.game.get_questions()[get_current_question()]
+		
+		var incorrect_alternatives: Array = []
+		for alternative in dictionary_questions["alternatives"]:
+			if alternative.has("incorrect"):
+				incorrect_alternatives.append(alternative["incorrect"])
+		
+		for alternative in question_container.get_children():
+			if alternative is Alternative:
+				if alternative.message.text in incorrect_alternatives and not alternative.is_disabled():
+					print(alternative.message.text)
+					alternative.disabled(true)
+					
+					break
+	
+	
+	
+	

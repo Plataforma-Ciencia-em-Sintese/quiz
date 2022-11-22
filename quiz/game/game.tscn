@@ -262,7 +262,7 @@ corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
 [sub_resource type="DynamicFont" id=115]
-size = 41
+size = 38
 use_filter = true
 font_data = ExtResource( 3 )
 
@@ -748,20 +748,19 @@ custom_styles/pressed = SubResource( 91 )
 custom_styles/focus = SubResource( 92 )
 custom_styles/disabled = SubResource( 93 )
 custom_styles/normal = SubResource( 94 )
-disabled = true
 text = "ﯦ"
 selected_color = 1
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BarContainer/HBoxContainer/Tip"]
+[node name="Counter" type="Label" parent="MarginContainer/VBoxContainer/BarContainer/HBoxContainer/Tip"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -10.0
+margin_left = -15.0
 margin_top = -10.0
-margin_right = -10.0
+margin_right = -15.0
 margin_bottom = -10.0
-custom_colors/font_color = Color( 1, 1, 1, 0.25 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
 custom_fonts/font = SubResource( 115 )
-text = "*"
+text = "0"
 align = 2
 valign = 2
 
@@ -959,3 +958,4 @@ margin_right = 1288.0
 margin_bottom = 668.0
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/BarContainer/Home" to="." method="_on_Home_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/BarContainer/HBoxContainer/Tip" to="." method="_on_Tip_pressed"]
