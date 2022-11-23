@@ -7,6 +7,8 @@ extends Panel
 
 
 #  [SIGNALS]
+signal restart_level
+signal continue_level
 
 
 #  [ENUMS]
@@ -22,17 +24,27 @@ extends Panel
 
 
 #  [PRIVATE_VARIABLES]
+var _game_score: int = int(0) \
+		setget set_game_score, get_game_score
+
+var _total_score: int = int(0) \
+		setget set_total_score, get_total_score
 
 
 #  [ONREADY_VARIABLES]
-onready var tittle_message: Label = $GlobalContainer/MarginContainer/VBoxContainer/HBoxContainer/ResultContainer/CongratulationsContainer/Message
-onready var total_stars: RichTextLabel = $GlobalContainer/MarginContainer/VBoxContainer/HBoxContainer/ResultContainer/CongratulationsContainer/TotalStars
-onready var record_message: Label = $GlobalContainer/MarginContainer/VBoxContainer/HBoxContainer/ResultContainer/RecordContainer/Message
-onready var stars: HBoxContainer = $GlobalContainer/MarginContainer/VBoxContainer/HBoxContainer/ResultContainer/RecordContainer/Stars
-onready var time_counter: Label = $GlobalContainer/MarginContainer/VBoxContainer/HBoxContainer/ResultContainer/StatisticsContainer/TimeContainer/TotalTime
-onready var attempts_counter: Label = $GlobalContainer/MarginContainer/VBoxContainer/HBoxContainer/ResultContainer/StatisticsContainer/AttemptsContainer/TotalAttempts
-onready var hide: Button = $GlobalContainer/Hide
-onready var show: Button = $"../ShowPanelInformation"
+onready var title_message: Label = $MainPanel/MarginContainer/GlobalContainer/MainContainer/MessageContainer/CongratulationsContainer/Title
+onready var result_message: RichTextLabel = $MainPanel/MarginContainer/GlobalContainer/MainContainer/MessageContainer/CongratulationsContainer/TotalRecord
+onready var record_message: Label = $MainPanel/MarginContainer/GlobalContainer/MainContainer/MessageContainer/RecordContainer/NewRecord
+onready var stars: HBoxContainer = $MainPanel/MarginContainer/GlobalContainer/MainContainer/MessageContainer/RecordContainer/Stars
+onready var first_star: Label = $MainPanel/MarginContainer/GlobalContainer/MainContainer/MessageContainer/RecordContainer/Stars/First
+onready var second_star: Label = $MainPanel/MarginContainer/GlobalContainer/MainContainer/MessageContainer/RecordContainer/Stars/Second
+onready var third_star: Label = $MainPanel/MarginContainer/GlobalContainer/MainContainer/MessageContainer/RecordContainer/Stars/Third
+onready var mascot_image: TextureRect = $MainPanel/MarginContainer/GlobalContainer/MainContainer/MascotImage
+onready var hide_panel: Button = $MainPanel/HidePanel
+onready var show_panel: Button = $ShowPanel
+onready var main_panel: Panel = $MainPanel
+onready var total_time: Label = $MainPanel/MarginContainer/GlobalContainer/MainContainer/MessageContainer/StatisticsContainer/TimeContainer/TotalTime
+onready var total_attempts: Label = $MainPanel/MarginContainer/GlobalContainer/MainContainer/MessageContainer/StatisticsContainer/AttemptsContainer/TotalAttempts
 
 
 #  [OPTIONAL_BUILT-IN_VIRTUAL_METHOD]
@@ -42,7 +54,8 @@ onready var show: Button = $"../ShowPanelInformation"
 
 #  [BUILT-IN_VURTUAL_METHOD]
 func _ready() -> void:
-	_load_theme()
+	self.visible = false
+	mascot_image.texture = API.common.get_mascot()
 
 
 #  [REMAINIG_BUILT-IN_VIRTUAL_METHODS]
@@ -51,66 +64,98 @@ func _ready() -> void:
 
 
 #  [PUBLIC_METHODS]
+func init_panel(game_score: int, total_score: int) -> void:
+	set_game_score(game_score)
+	set_total_score(total_score)
+	
+	_load_theme()
+	
+	self.visible = true
 
 
 #  [PRIVATE_METHODS]
+func set_game_score(new_value: int) -> void:
+	_game_score = new_value
+
+
+func get_game_score() -> int:
+	return _game_score
+
+
+func set_total_score(new_value: int) -> void:
+	_total_score = new_value
+
+
+func get_total_score() -> int:
+	return _total_score
+
+
 func _load_theme() -> void:
-	tittle_message.set("custom_colors/font_color", API.theme.get_color(API.theme.PB))
+	title_message.set("custom_colors/font_color", API.theme.get_color(API.theme.PB))
 	record_message.set("custom_colors/font_color", API.theme.get_color(API.theme.PD1))
 	
-	for star in stars.get_children():
-		star.set("custom_colors/font_color", API.theme.get_color(API.theme.SB))
+	_star_rule()
 	
-	time_counter.set("custom_colors/font_color", API.theme.get_color(API.theme.PB))
-	attempts_counter.set("custom_colors/font_color", API.theme.get_color(API.theme.PB))
+	total_time.set("custom_colors/font_color", API.theme.get_color(API.theme.SB))
+	total_attempts.set("custom_colors/font_color", API.theme.get_color(API.theme.SB))
 	
-	hide.set("custom_colors/font_color", API.theme.get_color(API.theme.WHITE))
-	hide.set("custom_colors/font_color_hover", API.theme.get_color(API.theme.WHITE))
-	hide.set("custom_colors/font_color_pressed", API.theme.get_color(API.theme.PB))
-	
-	var hide_state_hover: StyleBoxFlat = hide.get("custom_styles/hover")
-	hide_state_hover.set("bg_color", API.theme.get_color(API.theme.PL1))
-	hide_state_hover.set("border_color", API.theme.get_color(API.theme.PD2))
-	
-	var hide_state_pressed: StyleBoxFlat = hide.get("custom_styles/pressed")
-	hide_state_pressed.set("bg_color", API.theme.get_color(API.theme.WHITE))
-	hide_state_pressed.set("border_color", API.theme.get_color(API.theme.PD2))
-	
-	var hide_state_focus: StyleBoxFlat = hide.get("custom_styles/focus")
-	hide_state_focus.set("bg_color", API.theme.get_color(API.theme.PL1))
-	hide_state_focus.set("border_color", API.theme.get_color(API.theme.PD2))
-	
-	var hide_state_disabled: StyleBoxFlat = hide.get("custom_styles/disabled")
-	hide_state_disabled.set("bg_color", API.theme.get_color(API.theme.PB))
-	hide_state_disabled.set("border_color", API.theme.get_color(API.theme.PD2))
-	
-	var hide_state_normal: StyleBoxFlat = hide.get("custom_styles/normal")
-	hide_state_normal.set("bg_color", API.theme.get_color(API.theme.PB))
-	hide_state_normal.set("border_color", API.theme.get_color(API.theme.PD2))
-	
-	show.set("custom_colors/font_color", API.theme.get_color(API.theme.WHITE))
-	show.set("custom_colors/font_color_hover", API.theme.get_color(API.theme.WHITE))
-	show.set("custom_colors/font_color_pressed", API.theme.get_color(API.theme.PB))
-	
-	var show_state_hover: StyleBoxFlat = show.get("custom_styles/hover")
-	show_state_hover.set("bg_color", API.theme.get_color(API.theme.PL1))
-	show_state_hover.set("border_color", API.theme.get_color(API.theme.PD2))
-	
-	var show_state_pressed: StyleBoxFlat = show.get("custom_styles/pressed")
-	show_state_pressed.set("bg_color", API.theme.get_color(API.theme.WHITE))
-	show_state_pressed.set("border_color", API.theme.get_color(API.theme.PD2))
-	
-	var show_state_focus: StyleBoxFlat = show.get("custom_styles/focus")
-	show_state_focus.set("bg_color", API.theme.get_color(API.theme.PL1))
-	show_state_focus.set("border_color", API.theme.get_color(API.theme.PD2))
-	
-	var show_state_disabled: StyleBoxFlat = show.get("custom_styles/disabled")
-	show_state_disabled.set("bg_color", API.theme.get_color(API.theme.PB))
-	show_state_disabled.set("border_color", API.theme.get_color(API.theme.PD2))
-	
-	var show_state_normal: StyleBoxFlat = show.get("custom_styles/normal")
-	show_state_normal.set("bg_color", API.theme.get_color(API.theme.PB))
-	show_state_normal.set("border_color", API.theme.get_color(API.theme.PD2))
+	result_message.bbcode_text = ("Você acertou [color=#" +
+	str(API.theme.get_color(API.theme.SB).to_html(false)) + "][b]" +
+	str(get_game_score()) + "[/b][/color] de [color=#" +
+	str(API.theme.get_color(API.theme.SB).to_html(false)) + "][b]" +
+	str(get_total_score()) + "[/b][/color]" + "\n" + " perguntas.")
  
 
+func _star_rule() -> void:
+	var value: float = (float(get_game_score() * 100)) / float(get_total_score())
+	
+	print(value)
+	
+	# 0 estrelas: 0% a 20%
+	if value >= 0.0 and value < 20.0:
+		first_star.set("custom_colors/font_color", Color(1.0, 1.0, 1.0, 0.0))
+		second_star.set("custom_colors/font_color", Color(1.0, 1.0, 1.0, 0.0))
+		third_star.set("custom_colors/font_color", Color(1.0, 1.0, 1.0, 0.0))
+	
+	# 1 estrela: 20% a 50%
+	if value >= 20.0 and value < 50.0:
+		first_star.set("custom_colors/font_color", API.theme.get_color(API.theme.SB))
+		second_star.set("custom_colors/font_color", Color(1.0, 1.0, 1.0, 0.0))
+		third_star.set("custom_colors/font_color", Color(1.0, 1.0, 1.0, 0.0))
+	
+	# 2 estrelas: 50% a 80%
+	if value >= 50.0 and value < 80.0:
+		first_star.set("custom_colors/font_color", API.theme.get_color(API.theme.SB))
+		second_star.set("custom_colors/font_color", API.theme.get_color(API.theme.SB))
+		third_star.set("custom_colors/font_color", Color(1.0, 1.0, 1.0, 0.0))
+	
+	# 3 estrelas: 80% a 100%
+	if value >= 80.0 and value < 100.0:
+		first_star.set("custom_colors/font_color", API.theme.get_color(API.theme.SB))
+		second_star.set("custom_colors/font_color", API.theme.get_color(API.theme.SB))
+		third_star.set("custom_colors/font_color", API.theme.get_color(API.theme.SB))
+
+
 #  [SIGNAL_METHODS]
+
+
+func _on_HidePanel_pressed() -> void:
+	main_panel.visible = false
+	show_panel.visible = true
+
+
+func _on_ShowPanel_pressed() -> void:
+	show_panel.visible = false
+	main_panel.visible = true
+
+
+func _on_Continue_pressed() -> void:
+	pass # Replace with function body.
+
+
+func _on_Restart_pressed() -> void:
+	emit_signal("restart_level")
+
+
+func _on_Share_pressed() -> void:
+	emit_signal("continue_level")

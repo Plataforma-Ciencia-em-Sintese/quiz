@@ -140,6 +140,11 @@ func _on_all_request_theme_completed() -> void:
 
 func _on_a_request_completed() -> void:
 	if is_all_request_completed():
+		
+#		var node = preload()
+#		var node_instance = node.instance()
+#		get_tree().get_root().add_child(node_instance)
+		
 		emit_signal("all_request_completed")
 
 

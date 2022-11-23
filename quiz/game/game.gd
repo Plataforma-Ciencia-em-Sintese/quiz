@@ -7,6 +7,8 @@ extends Control
 
 
 #  [SIGNALS]
+signal end_game
+
 
 
 #  [ENUMS]
@@ -26,17 +28,20 @@ enum State {FREE=0, WAITING=1}
 var _state: int = State.FREE \
 		setget set_state, get_state
 
-var _waiting_seconds: float = 2 \
+var _waiting_seconds: float = float(2) \
 		setget set_waiting_seconds, get_waiting_seconds
 
-var _total_questions: int = 0 \
+var _total_questions: int = int(0) \
 		setget set_total_questions, get_total_questions
 		
-var _current_question: int = 0 \
+var _current_question: int = int(0) \
 		setget set_current_question, get_current_question
 
-var _tip_counter: int = 3 \
+var _tip_counter: int = int(3) \
 		setget set_tip_counter, get_tip_counter
+
+var _point_counter: int = int(0) \
+		setget set_point_counter, get_point_counter 
 
 
 #  [ONREADY_VARIABLES]
@@ -60,6 +65,8 @@ onready var tip_counter: Label = $MarginContainer/VBoxContainer/BarContainer/HBo
 func _ready() -> void:
 	_load_current_question()
 	set_total_questions(int( API.game.get_questions().size())) 
+	
+	connect("end_game", self, "_on_Self_end_game")
 	
 	alternative_1.connect("pressed", self, "_on_Alternative1_Button_pressed")
 	alternative_2.connect("pressed", self, "_on_Alternative2_Button_pressed")
@@ -118,6 +125,14 @@ func get_waiting_seconds() -> float:
 	return _waiting_seconds
 
 
+func set_point_counter(new_value: int) -> void:
+	_point_counter = new_value
+
+
+func get_point_counter() -> int:
+	return _point_counter
+
+
 #  [PRIVATE_METHODS]
 func _load_current_question() -> void:
 	set_current_question(get_current_question())
@@ -149,8 +164,6 @@ func _load_current_question() -> void:
 			alternative.disabled(true)
 			alternative.checker_visible(false)
 			alternative.set("modulate", Color(1.0, 1.0, 1.0, 1.0))
-	
-	
 	
 	# set text
 	if dictionary_questions["alternatives"].size() >= 1:
@@ -192,9 +205,15 @@ func _reveal_alternatives() -> void:
 				alternative.set_checker_state(false)
 
 
-func _incorrect_alternatives_counter() -> int:
-	var dictionary_questions: Dictionary = API.game.get_questions()[get_current_question()]
-	return (dictionary_questions["alternatives"].size() -1)
+func _call_next_question() -> void:
+	set_state(State.WAITING)
+	yield(get_tree().create_timer(get_waiting_seconds()), "timeout")
+	set_state(State.FREE)
+	if (get_current_question() + 1) < get_total_questions(): 
+		set_current_question(get_current_question() + 1)
+		_load_current_question()
+	else:
+		emit_signal("end_game")
  
 
 #  [SIGNAL_METHODS]
@@ -208,14 +227,12 @@ func _on_Alternative1_Button_pressed(message: String) -> void:
 	alternative_3.disabled(true)
 	alternative_4.disabled(true)
 	
-	_reveal_alternatives()
+	var dictionary_questions: Dictionary = API.game.get_questions()[get_current_question()]
+	if alternative_1.message.text == dictionary_questions["alternatives"][0]["correct"]:
+		set_point_counter(get_point_counter() + 1)
 	
-	set_state(State.WAITING)
-	yield(get_tree().create_timer(get_waiting_seconds()), "timeout")
-	set_state(State.FREE)
-	if (get_current_question() + 1) < get_total_questions(): 
-		set_current_question(get_current_question() + 1)
-		_load_current_question()
+	_reveal_alternatives()
+	_call_next_question()
 	
 
 
@@ -225,14 +242,12 @@ func _on_Alternative2_Button_pressed(message: String) -> void:
 	alternative_3.disabled(true)
 	alternative_4.disabled(true)
 	
-	_reveal_alternatives()
+	var dictionary_questions: Dictionary = API.game.get_questions()[get_current_question()]
+	if alternative_2.message.text == dictionary_questions["alternatives"][0]["correct"]:
+		set_point_counter(get_point_counter() + 1)
 	
-	set_state(State.WAITING)
-	yield(get_tree().create_timer(get_waiting_seconds()), "timeout")
-	set_state(State.FREE)
-	if (get_current_question() + 1) < get_total_questions(): 
-		set_current_question(get_current_question() + 1)
-		_load_current_question()
+	_reveal_alternatives()
+	_call_next_question()
 
 
 func _on_Alternative3_Button_pressed(message: String) -> void:
@@ -241,14 +256,12 @@ func _on_Alternative3_Button_pressed(message: String) -> void:
 	alternative_3.disabled(true, true)
 	alternative_4.disabled(true)
 	
-	_reveal_alternatives()
+	var dictionary_questions: Dictionary = API.game.get_questions()[get_current_question()]
+	if alternative_3.message.text == dictionary_questions["alternatives"][0]["correct"]:
+		set_point_counter(get_point_counter() + 1)
 	
-	set_state(State.WAITING)
-	yield(get_tree().create_timer(get_waiting_seconds()), "timeout")
-	set_state(State.FREE)
-	if (get_current_question() + 1) < get_total_questions(): 
-		set_current_question(get_current_question() + 1)
-		_load_current_question()
+	_reveal_alternatives()
+	_call_next_question()
 
 
 func _on_Alternative4_Button_pressed(message: String) -> void:
@@ -257,14 +270,12 @@ func _on_Alternative4_Button_pressed(message: String) -> void:
 	alternative_3.disabled(true)
 	alternative_4.disabled(true, true)
 	
-	_reveal_alternatives()
+	var dictionary_questions: Dictionary = API.game.get_questions()[get_current_question()]
+	if alternative_4.message.text == dictionary_questions["alternatives"][0]["correct"]:
+		set_point_counter(get_point_counter() + 1)
 	
-	set_state(State.WAITING)
-	yield(get_tree().create_timer(get_waiting_seconds()), "timeout")
-	set_state(State.FREE)
-	if (get_current_question() + 1) < get_total_questions(): 
-		set_current_question(get_current_question() + 1)
-		_load_current_question()
+	_reveal_alternatives()
+	_call_next_question()
 
 
 func _on_Tip_pressed() -> void:
@@ -276,9 +287,6 @@ func _on_Tip_pressed() -> void:
 		if get_tip_counter() == 0:
 			tip_counter.visible = false
 			tip.disabled = true
-		
-		print(get_current_question() +1)
-		print(_incorrect_alternatives_counter())
 		
 		var dictionary_questions: Dictionary = API.game.get_questions()[get_current_question()]
 		
@@ -294,7 +302,20 @@ func _on_Tip_pressed() -> void:
 					alternative.disabled(true)
 					
 					break
-	
-	
-	
-	
+
+
+func _on_Self_end_game() -> void:
+	var panel_information: Resource = preload("res://game/panel_information/panel_information.tscn")
+	var panel_information_instance: Panel = panel_information.instance()
+	self.add_child(panel_information_instance)
+	panel_information_instance.init_panel(get_point_counter(), get_total_questions())
+	panel_information_instance.connect("restart_level", self, "_on_PanelInformation_restart_level")
+	panel_information_instance.connect("continue_level", self, "_on_PanelInformation_continue_level")
+
+
+func _on_PanelInformation_restart_level() -> void:
+	pass
+
+
+func _on_PanelInformation_continue_level() -> void:
+	pass
