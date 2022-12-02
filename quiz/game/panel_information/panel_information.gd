@@ -150,12 +150,14 @@ func _on_ShowPanel_pressed() -> void:
 
 
 func _on_Continue_pressed() -> void:
-	pass # Replace with function body.
+	#emit_signal("continue_level")
+	get_tree().change_scene("res://home/home.tscn")
 
 
 func _on_Restart_pressed() -> void:
-	emit_signal("restart_level")
+	#emit_signal("restart_level")
+	pass
 
 
 func _on_Share_pressed() -> void:
-	emit_signal("continue_level")
+	pass

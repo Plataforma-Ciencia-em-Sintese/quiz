@@ -1,12 +1,13 @@
-[gd_scene load_steps=22 format=2]
+[gd_scene load_steps=23 format=2]
 
 [ext_resource path="res://assets/components/background/background.tscn" type="PackedScene" id=1]
 [ext_resource path="res://assets/themes/default/how_to_play2.png" type="Texture" id=2]
 [ext_resource path="res://assets/themes/default/how_to_play1.png" type="Texture" id=3]
 [ext_resource path="res://assets/fonts/FredokaOne/FredokaOne-Regular.ttf" type="DynamicFontData" id=4]
-[ext_resource path="res://how_to_play/how_to_play.gd" type="Script" id=5]
+[ext_resource path="res://game/how_to_play/how_to_play.gd" type="Script" id=5]
 [ext_resource path="res://assets/themes/default/how_to_play3.png" type="Texture" id=6]
 [ext_resource path="res://assets/components/theme_button_icon/theme_button_icon.tscn" type="PackedScene" id=7]
+[ext_resource path="res://game/how_to_play/texture.png" type="Texture" id=8]
 
 [sub_resource type="DynamicFont" id=16]
 size = 86
@@ -292,6 +293,22 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 custom_styles/panel = SubResource( 8 )
 
+[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer/Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_constants/margin_right = 100
+custom_constants/margin_top = 100
+custom_constants/margin_left = 100
+custom_constants/margin_bottom = 100
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer/Panel/MarginContainer2"]
+margin_left = 100.0
+margin_top = 100.0
+margin_right = 1362.0
+margin_bottom = 755.0
+texture = ExtResource( 8 )
+stretch_mode = 6
+
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/Panel"]
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -301,6 +318,7 @@ custom_constants/margin_left = 20
 custom_constants/margin_bottom = 20
 
 [node name="Panel" type="Panel" parent="MarginContainer/VBoxContainer/Panel/MarginContainer"]
+visible = false
 margin_left = 20.0
 margin_top = 20.0
 margin_right = 1442.0

@@ -16,6 +16,7 @@ enum State {FREE=0, WAITING=1}
 
 
 #  [CONSTANTS]
+const HowToPlay := preload("res://game/how_to_play/how_to_play.tscn")
 
 
 #  [EXPORTED_VARIABLES]
@@ -319,3 +320,8 @@ func _on_PanelInformation_restart_level() -> void:
 
 func _on_PanelInformation_continue_level() -> void:
 	pass
+
+
+func _on_Help_pressed() -> void:
+	var how_to_play := HowToPlay.instance()
+	add_child(how_to_play)
