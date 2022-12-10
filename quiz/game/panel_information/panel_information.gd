@@ -39,7 +39,8 @@ onready var stars: HBoxContainer = $MainPanel/MarginContainer/GlobalContainer/Ma
 onready var first_star: Label = $MainPanel/MarginContainer/GlobalContainer/MainContainer/MessageContainer/RecordContainer/Stars/First
 onready var second_star: Label = $MainPanel/MarginContainer/GlobalContainer/MainContainer/MessageContainer/RecordContainer/Stars/Second
 onready var third_star: Label = $MainPanel/MarginContainer/GlobalContainer/MainContainer/MessageContainer/RecordContainer/Stars/Third
-onready var mascot_image: TextureRect = $MainPanel/MarginContainer/GlobalContainer/MainContainer/MascotImage
+onready var mascot_image: TextureRect = $MainPanel/MarginContainer/GlobalContainer/MainContainer/AspectRatioContainer/MascotImage
+onready var mascot_background: TextureRect = $MainPanel/MarginContainer/GlobalContainer/MainContainer/AspectRatioContainer/MascotBackground
 onready var hide_panel: Button = $MainPanel/HidePanel
 onready var show_panel: Button = $ShowPanel
 onready var main_panel: Panel = $MainPanel
@@ -104,6 +105,8 @@ func _load_theme() -> void:
 	str(get_game_score()) + "[/b][/color] de [color=#" +
 	str(API.theme.get_color(API.theme.SB).to_html(false)) + "][b]" +
 	str(get_total_score()) + "[/b][/color]" + "\n" + " perguntas.")
+	
+	mascot_background.set("modulate", API.theme.get_color(API.theme.PL3))
  
 
 func _star_rule() -> void:
@@ -156,7 +159,7 @@ func _on_Continue_pressed() -> void:
 
 func _on_Restart_pressed() -> void:
 	#emit_signal("restart_level")
-	pass
+	get_tree().change_scene("res://game/game.tscn")
 
 
 func _on_Share_pressed() -> void:
