@@ -8,7 +8,7 @@
 [ext_resource path="res://assets/components/theme_button_icon/theme_button_icon.tscn" type="PackedScene" id=6]
 [ext_resource path="res://game/alternative/alternative.tscn" type="PackedScene" id=7]
 [ext_resource path="res://assets/placeholder.png" type="Texture" id=8]
-[ext_resource path="res://assets/themes/default/character_background.png" type="Texture" id=9]
+[ext_resource path="res://assets/themes/default/Vector 25.png" type="Texture" id=9]
 
 [sub_resource type="DynamicFont" id=82]
 size = 86
@@ -705,7 +705,7 @@ __meta__ = {
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 margin_left = 229.0
 margin_top = 25.0
-margin_right = 1691.0
+margin_right = 1692.0
 margin_bottom = 1055.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -860,19 +860,19 @@ selected_color = 1
 [node name="GameContainer" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
 self_modulate = Color( 1, 1, 1, 0 )
 margin_top = 132.0
-margin_right = 1462.0
+margin_right = 1463.0
 margin_bottom = 1030.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 custom_styles/panel = SubResource( 9 )
 
 [node name="Panel" type="Panel" parent="MarginContainer/VBoxContainer/GameContainer"]
-margin_right = 1462.0
+margin_right = 1463.0
 margin_bottom = 898.0
 custom_styles/panel = SubResource( 10 )
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/GameContainer"]
-margin_right = 1462.0
+margin_right = 1463.0
 margin_bottom = 898.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -884,12 +884,11 @@ custom_constants/margin_bottom = 100
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/GameContainer/MarginContainer"]
 margin_left = 80.0
 margin_top = 100.0
-margin_right = 1382.0
+margin_right = 1383.0
 margin_bottom = 798.0
 custom_constants/separation = 38
 
 [node name="AspectRatioContainer" type="AspectRatioContainer" parent="MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer"]
-visible = false
 margin_top = 3.0
 margin_right = 476.0
 margin_bottom = 695.0
@@ -897,21 +896,30 @@ rect_min_size = Vector2( 475.3, 691.18 )
 size_flags_vertical = 4
 
 [node name="Background" type="TextureRect" parent="MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/AspectRatioContainer"]
+modulate = Color( 0.831373, 0.831373, 0.831373, 1 )
 margin_right = 476.0
 margin_bottom = 692.0
 texture = ExtResource( 9 )
 stretch_mode = 6
 
-[node name="Mascot" type="TextureRect" parent="MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/AspectRatioContainer"]
+[node name="Pet" type="TextureRect" parent="MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/AspectRatioContainer"]
 margin_top = 108.0
 margin_right = 476.0
 margin_bottom = 584.0
 texture = ExtResource( 8 )
 stretch_mode = 6
 
+[node name="QuestionImage" type="TextureRect" parent="MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/AspectRatioContainer"]
+modulate = Color( 0.831373, 0.831373, 0.831373, 1 )
+margin_top = 108.0
+margin_right = 476.0
+margin_bottom = 584.0
+stretch_mode = 6
+
 [node name="pergunta" type="PanelContainer" parent="MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer"]
 self_modulate = Color( 1, 1, 1, 0 )
-margin_right = 1302.0
+margin_left = 514.0
+margin_right = 1303.0
 margin_bottom = 698.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -919,12 +927,12 @@ size_flags_vertical = 3
 [node name="QuestionContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/pergunta"]
 margin_left = 7.0
 margin_top = 7.0
-margin_right = 1295.0
+margin_right = 782.0
 margin_bottom = 691.0
 custom_constants/separation = 20
 
 [node name="Question" type="Label" parent="MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/pergunta/QuestionContainer"]
-margin_right = 1288.0
+margin_right = 775.0
 margin_bottom = 140.0
 rect_min_size = Vector2( 0, 140 )
 size_flags_horizontal = 7
@@ -939,22 +947,18 @@ __meta__ = {
 
 [node name="Alternative1" parent="MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/pergunta/QuestionContainer" instance=ExtResource( 7 )]
 margin_top = 160.0
-margin_right = 1288.0
 margin_bottom = 272.0
 
 [node name="Alternative2" parent="MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/pergunta/QuestionContainer" instance=ExtResource( 7 )]
 margin_top = 292.0
-margin_right = 1288.0
 margin_bottom = 404.0
 
 [node name="Alternative3" parent="MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/pergunta/QuestionContainer" instance=ExtResource( 7 )]
 margin_top = 424.0
-margin_right = 1288.0
 margin_bottom = 536.0
 
 [node name="Alternative4" parent="MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/pergunta/QuestionContainer" instance=ExtResource( 7 )]
 margin_top = 556.0
-margin_right = 1288.0
 margin_bottom = 668.0
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/BarContainer/Home" to="." method="_on_Home_pressed"]

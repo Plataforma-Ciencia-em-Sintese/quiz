@@ -13,6 +13,7 @@ signal end_game
 
 #  [ENUMS]
 enum State {FREE=0, WAITING=1}
+enum PetImage {IDLE=0, HAPPY=1, LOSER=2}
 
 
 #  [CONSTANTS]
@@ -42,7 +43,14 @@ var _tip_counter: int = int(3) \
 		setget set_tip_counter, get_tip_counter
 
 var _point_counter: int = int(0) \
-		setget set_point_counter, get_point_counter 
+		setget set_point_counter, get_point_counter
+
+
+var _pet_images_state: Dictionary = Dictionary({
+	"idle": load("res://assets/themes/default/Group 90.png"),
+	"happy": load("res://assets/themes/default/Group 92.png"),
+	"loser": load("res://assets/themes/default/Group 91.png")
+}) setget set_pet_images_state, get_pet_images_state
 
 
 #  [ONREADY_VARIABLES]
@@ -55,6 +63,9 @@ onready var alternative_3: Control = $MarginContainer/VBoxContainer/GameContaine
 onready var alternative_4: Control = $MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/pergunta/QuestionContainer/Alternative4
 onready var tip: Button = $MarginContainer/VBoxContainer/BarContainer/HBoxContainer/Tip
 onready var tip_counter: Label = $MarginContainer/VBoxContainer/BarContainer/HBoxContainer/Tip/Counter
+onready var pet_background: TextureRect = $MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/AspectRatioContainer/Background
+onready var pet_image: TextureRect = $MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/AspectRatioContainer/Pet
+onready var question_image: TextureRect = $MarginContainer/VBoxContainer/GameContainer/MarginContainer/HBoxContainer/AspectRatioContainer/QuestionImage
 
 
 #  [OPTIONAL_BUILT-IN_VIRTUAL_METHOD]
@@ -64,6 +75,9 @@ onready var tip_counter: Label = $MarginContainer/VBoxContainer/BarContainer/HBo
 
 #  [BUILT-IN_VURTUAL_METHOD]
 func _ready() -> void:
+	_load_theme()
+	pet_image.texture = get_pet_images_state()["idle"]
+	
 	_load_current_question()
 	set_total_questions(int( API.game.get_questions().size())) 
 	
@@ -134,7 +148,19 @@ func get_point_counter() -> int:
 	return _point_counter
 
 
+func set_pet_images_state(new_value: Dictionary) -> void:
+	_pet_images_state = new_value
+
+
+func get_pet_images_state() -> Dictionary:
+	return _pet_images_state
+
+
 #  [PRIVATE_METHODS]
+func _load_theme() -> void:
+	pet_background.set("modulate", API.theme.get_color(API.theme.PL3))
+
+
 func _load_current_question() -> void:
 	set_current_question(get_current_question())
 	var dictionary_questions: Dictionary = API.game.get_questions()[get_current_question()]
@@ -231,6 +257,9 @@ func _on_Alternative1_Button_pressed(message: String) -> void:
 	var dictionary_questions: Dictionary = API.game.get_questions()[get_current_question()]
 	if alternative_1.message.text == dictionary_questions["alternatives"][0]["correct"]:
 		set_point_counter(get_point_counter() + 1)
+		pet_image.texture = get_pet_images_state()["happy"]
+	else:
+		pet_image.texture = get_pet_images_state()["loser"]
 	
 	_reveal_alternatives()
 	_call_next_question()
@@ -246,6 +275,9 @@ func _on_Alternative2_Button_pressed(message: String) -> void:
 	var dictionary_questions: Dictionary = API.game.get_questions()[get_current_question()]
 	if alternative_2.message.text == dictionary_questions["alternatives"][0]["correct"]:
 		set_point_counter(get_point_counter() + 1)
+		pet_image.texture = get_pet_images_state()["happy"]
+	else:
+		pet_image.texture = get_pet_images_state()["loser"]
 	
 	_reveal_alternatives()
 	_call_next_question()
@@ -260,6 +292,9 @@ func _on_Alternative3_Button_pressed(message: String) -> void:
 	var dictionary_questions: Dictionary = API.game.get_questions()[get_current_question()]
 	if alternative_3.message.text == dictionary_questions["alternatives"][0]["correct"]:
 		set_point_counter(get_point_counter() + 1)
+		pet_image.texture = get_pet_images_state()["happy"]
+	else:
+		pet_image.texture = get_pet_images_state()["loser"]
 	
 	_reveal_alternatives()
 	_call_next_question()
@@ -274,6 +309,9 @@ func _on_Alternative4_Button_pressed(message: String) -> void:
 	var dictionary_questions: Dictionary = API.game.get_questions()[get_current_question()]
 	if alternative_4.message.text == dictionary_questions["alternatives"][0]["correct"]:
 		set_point_counter(get_point_counter() + 1)
+		pet_image.texture = get_pet_images_state()["happy"]
+	else:
+		pet_image.texture = get_pet_images_state()["loser"]
 	
 	_reveal_alternatives()
 	_call_next_question()
